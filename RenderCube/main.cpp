@@ -10,7 +10,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
 
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
 #define NS_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
@@ -18,7 +18,7 @@
 #include "metal/Metal.hpp"
 #endif
 
-//#undef KNAPZAK_METAL // if you want to use opengl on macos instead of metal, uncomment this line
+//#undef RENDERDOOS_METAL // if you want to use opengl on macos instead of metal, uncomment this line
 
 namespace
   {
@@ -41,27 +41,10 @@ namespace
     return get_random() % maximum;
     }
 
-  float get_random_float()
-    {
-    return ((get_random() & 0x3fffffff) * 1.0f) / 0x40000000;
-    }
-
-  void set_random_seed(uint32_t seed)
-    {
-    random_seed = seed + seed * 17 + seed * 121 + (seed * 121 / 17);
-    get_random();
-    random_seed ^= seed + seed * 17 + seed * 121 + (seed * 121 / 17);
-    get_random();
-    random_seed ^= seed + seed * 17 + seed * 121 + (seed * 121 / 17);
-    get_random();
-    random_seed ^= seed + seed * 17 + seed * 121 + (seed * 121 / 17);
-    get_random();
-    }
-
   }
 
 
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
 #include "../fltk-metal/Fl_Metal_Window.h"
 #else
 #include <GL/glew.h>
@@ -94,7 +77,7 @@ struct mouse_data
   bool dragging;
   };
 
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
 class canvas : public Fl_Metal_Window
   {
   public:
@@ -135,7 +118,7 @@ class canvas : public Fl_Gl_Window
       _mv_props.zoom_x = _zoom;
       _mv_props.zoom_y = _zoom * H / W;
       _mv_props.light_dir = RenderDoos::normalize(RenderDoos::float4(0.2f, 0.3f, 0.4f, 0.f));
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
       Fl_Metal_Window::resize(X, Y, W, H);
 #else
       Fl_Gl_Window::resize(X, Y, W, H);
@@ -153,12 +136,12 @@ class canvas : public Fl_Gl_Window
       _engine.destroy();
       delete _material;
       _material = nullptr;
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
       Fl_Metal_Window::hide();
 #else
       Fl_Gl_Window::hide();
 #endif
-  }
+      }
 
     virtual int handle(int event)
       {
@@ -195,7 +178,7 @@ class canvas : public Fl_Gl_Window
           break;
         }
       _do_mouse();
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
       return Fl_Metal_Window::handle(event);
 #else
       return Fl_Gl_Window::handle(event);
@@ -204,7 +187,7 @@ class canvas : public Fl_Gl_Window
 
   protected:
 
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
     virtual void _draw(MTL::Device* device, CA::MetalDrawable* drawable)
       {
       if (!_engine.is_initialized())
@@ -216,7 +199,7 @@ class canvas : public Fl_Gl_Window
         _init_engine();
 #endif
       RenderDoos::render_drawables drawables;
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
       drawables.metal_drawable = (void*)drawable;
       drawables.metal_screen_texture = (void*)drawable->texture();
 #endif          
@@ -260,34 +243,34 @@ class canvas : public Fl_Gl_Window
       _engine.geometry_begin(_geometry_id, 24, 6 * 6, (float**)&vp, (void**)&ip);
       // drawing
 
-      for (int i = 0; i < 6; i++)
+      for (int ii = 0; ii < 6; ii++)
         {
         for (int j = 0; j < 4; j++)
           {
           int s0 = ((j + 0) & 2) ? -1 : 1;
           int s1 = ((j + 1) & 2) ? -1 : 1;
-          if (i & 1)
+          if (ii & 1)
             s0 *= -1;
-          vp->x = planes[i][0] + s0 * planes[i + 2][0] + s1 * planes[i + 4][0];
-          vp->y = planes[i][1] + s0 * planes[i + 2][1] + s1 * planes[i + 4][1];
-          vp->z = planes[i][2] + s0 * planes[i + 2][2] + s1 * planes[i + 4][2];
+          vp->x = planes[ii][0] + s0 * planes[ii + 2][0] + s1 * planes[ii + 4][0];
+          vp->y = planes[ii][1] + s0 * planes[ii + 2][1] + s1 * planes[ii + 4][1];
+          vp->z = planes[ii][2] + s0 * planes[ii + 2][2] + s1 * planes[ii + 4][2];
 #ifdef USE_VERTEX_COMPACT
           vp->c0 = 0xff000000 | (gen() & 0x00ffffff);
 #else
-          vp->nx = planes[i][0];
-          vp->ny = planes[i][1];
-          vp->nz = planes[i][2];
-          vp->u = ((j + 0) & 2) ? 1 : 0;
-          vp->v = ((j + 1) & 2) ? 1 : 0;
+          vp->nx = planes[ii][0];
+          vp->ny = planes[ii][1];
+          vp->nz = planes[ii][2];
+          vp->u = ((j + 0) & 2) ? 1.f : 0.f;
+          vp->v = ((j + 1) & 2) ? 1.f : 0.f;
 #endif
           vp++;
           }
-        ip[0] = i * 4 + 3;
-        ip[1] = i * 4 + 2;
-        ip[2] = i * 4 + 1;
-        ip[3] = i * 4 + 3;
-        ip[4] = i * 4 + 1;
-        ip[5] = i * 4 + 0;
+        ip[0] = ii * 4 + 3;
+        ip[1] = ii * 4 + 2;
+        ip[2] = ii * 4 + 1;
+        ip[3] = ii * 4 + 3;
+        ip[4] = ii * 4 + 1;
+        ip[5] = ii * 4 + 0;
         ip += 6;
         }
       _engine.geometry_end(_geometry_id);
@@ -340,9 +323,9 @@ class canvas : public Fl_Gl_Window
         _mouse_data.prev_mouse_y = _mouse_data.mouse_y;
         redraw();
         }
-        }
+      }
 
-#if defined(KNAPZAK_METAL)
+#if defined(RENDERDOOS_METAL)
     void _init_engine(MTL::Device * device, CA::MetalDrawable * drawable)
       {
       _engine.init(device, RenderDoos::renderer_type::METAL);
@@ -357,12 +340,12 @@ class canvas : public Fl_Gl_Window
       _engine.init(nullptr, RenderDoos::renderer_type::OPENGL);
 #endif
       uint16_t* tex = new uint16_t[16 * 16 * 4];
-      for (int i = 0; i < 256; ++i)
+      for (int ii = 0; ii < 256; ++ii)
         {
-        tex[i * 4 + 0] = get_random(0x7fff);
-        tex[i * 4 + 1] = get_random(0x7fff);
-        tex[i * 4 + 2] = get_random(0x7fff);
-        tex[i * 4 + 3] = 0x7fff;
+        tex[ii * 4 + 0] = (uint16_t)get_random(0x7fff);
+        tex[ii * 4 + 1] = (uint16_t)get_random(0x7fff);
+        tex[ii * 4 + 2] = (uint16_t)get_random(0x7fff);
+        tex[ii * 4 + 3] = 0x7fff;
         }
       _texture_id = _engine.add_texture(16, 16, RenderDoos::texture_format_rgba8, tex);
 #ifdef USE_VERTEX_COMPACT
@@ -391,7 +374,7 @@ class canvas : public Fl_Gl_Window
     mouse_data _mouse_data;
     RenderDoos::model_view_properties _mv_props;
     float _zoom;
-      };
+  };
 
 class render_window : public Fl_Double_Window
   {
@@ -433,7 +416,7 @@ render_window* new_view(int w = 800, int h = 450)
   x = ((desktop.right - desktop.left) - w) / 2;
   y = ((desktop.bottom - desktop.top) - h) / 2;
 #endif
-  render_window* window = new render_window(x, y, w, h, "render_cube");
+  render_window* window = new render_window(x, y, w, h, "RenderCube");
 
   return window;
   }
@@ -464,17 +447,17 @@ int _main(int argc, char** argv)
 #else
     std::cout << e.what() << "\n";
 #endif
-  }
+    }
   catch (...) {}
   delete window;
   return result;
-      }
+  }
 
 #ifdef _WIN32
 int WINAPI wWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PWSTR /*pCmdLine*/, int /*nCmdShow*/)
   {
   return _main(0, nullptr);
-      }
+  }
 #else
 int main(int argc, char** argv)
   {
