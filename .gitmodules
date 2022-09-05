@@ -1,0 +1,6 @@
+[submodule "RenderDoos"]
+	path = RenderDoos
+	url = https://github.com/janm31415/RenderDoos
+[submodule "fltk"]
+	path = fltk
+	url = https://github.com/janm31415/fltk
