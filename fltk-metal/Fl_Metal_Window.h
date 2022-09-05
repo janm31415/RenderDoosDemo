@@ -5,7 +5,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
 
-#include "knapzak/metal/Metal.hpp"
+#include "RenderDoos/metal/Metal.hpp"
 
 class Fl_Metal_Window : public Fl_Window
 {
