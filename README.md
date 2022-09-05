@@ -9,3 +9,4 @@ The code can be build using CMake. The examples use [FLTK](https://www.fltk.org)
     git submodule update --init
     
 before you run CMake.
+If you have an ARM processor, then make sure to set the CMake variable RENDERDOOS_TARGET to arm.
