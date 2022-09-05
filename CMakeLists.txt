@@ -15,6 +15,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(fltk)
 add_subdirectory(RenderDoos)
 add_subdirectory(RenderCube)
+add_subdirectory(RenderFramebuffer)
+add_subdirectory(RenderShadertoy)
+add_subdirectory(RenderTexture)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
