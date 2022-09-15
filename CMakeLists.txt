@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(FLTK_BUILD_TEST OFF)
+
 add_subdirectory(fltk)
 add_subdirectory(RenderDoos)
 add_subdirectory(ComputeAddArrays)
