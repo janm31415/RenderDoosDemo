@@ -227,7 +227,7 @@ void perform_metal_computation_without_window()
   int32_t ph = _engine.add_program(-1, -1, sh);
   std::vector<float> A, B, result;
   const int max_size = 1024;
-  jtk::xorshift32 gen;
+  xorshift32 gen;
   std::uniform_real_distribution<float> dist(0.0, 1.0);
   A.reserve(max_size);
   B.reserve(max_size);

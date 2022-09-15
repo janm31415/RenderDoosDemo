@@ -36,7 +36,7 @@ set(SHADERS
 if (APPLE)
 list(APPEND HDRS ../fltk-metal/Fl_Metal_Window.h)
 list(APPEND SRCS ../fltk-metal/Fl_Metal_Window.mm)
-list(APPEND SHADERS ../knapzak/knapzak/shaders.metal)
+list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
 endif (APPLE)
 
 if (WIN32)
