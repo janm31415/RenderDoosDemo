@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <cmath>
 
 #ifdef _WIN32
 #include <windows.h>
