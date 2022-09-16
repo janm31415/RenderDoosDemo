@@ -19,6 +19,7 @@ add_subdirectory(RenderDoos)
 add_subdirectory(ComputeAddArrays)
 add_subdirectory(RenderCube)
 add_subdirectory(RenderFramebuffer)
+add_subdirectory(RenderPointCloud)
 add_subdirectory(RenderShadertoy)
 add_subdirectory(RenderTexture)
 
