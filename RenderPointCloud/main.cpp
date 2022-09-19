@@ -120,6 +120,7 @@ class canvas : public Fl_Gl_Window
       for (uint32_t j = 0; j < (uint32_t)_pointcloud.size(); ++j)
         {
         _vertex_colors.push_back(0xff000000 | get_random(0x00ffffff));
+        //_vertex_colors.push_back(0xff0000ff);
         }
       _mouse_data.mouse_x = 0.f;
       _mouse_data.mouse_y = 0.f;
