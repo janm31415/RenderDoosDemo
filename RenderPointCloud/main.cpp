@@ -116,6 +116,11 @@ class canvas : public Fl_Gl_Window
       mode(FL_RGB8 | FL_DOUBLE | FL_OPENGL3 | FL_DEPTH);
 #endif
       _pointcloud = generate_spherical_pointcloud();
+      _vertex_colors.reserve(_pointcloud.size());
+      for (uint32_t j = 0; j < (uint32_t)_pointcloud.size(); ++j)
+        {
+        _vertex_colors.push_back(0xff000000 | get_random(0x00ffffff));
+        }
       _mouse_data.mouse_x = 0.f;
       _mouse_data.mouse_y = 0.f;
       _mouse_data.prev_mouse_x = 0.f;
@@ -229,7 +234,7 @@ class canvas : public Fl_Gl_Window
       drawables.metal_screen_texture = (void*)drawable->texture();
 #endif          
       _engine.frame_begin(drawables);
-      RenderDoos::vertex_standard* vp;
+      RenderDoos::vertex_color* vp;
       uint32_t* ip;
 
       _mv_props.zoom_x = _zoom;
@@ -250,9 +255,9 @@ class canvas : public Fl_Gl_Window
       _engine.geometry_begin(_geometry_id, (int32_t)_pointcloud.size() * 4, (int32_t)_pointcloud.size() * 6, (float**)&vp, (void**)&ip);
       // drawing
 
-      for (uint32_t i = 0; i < _pointcloud.size(); ++i)
+      for (uint32_t j = 0; j < _pointcloud.size(); ++j)
         {
-        const auto& pt = _pointcloud[i];
+        const auto& pt = _pointcloud[j];
         std::array<float, 3> axis({ 0,0,0 });
         int smallest_component = 0;
         if (std::abs(pt[1]) < std::abs(pt[smallest_component]))
@@ -275,6 +280,7 @@ class canvas : public Fl_Gl_Window
         vp->x = pt[0] + eps * cross[0];
         vp->y = pt[1] + eps * cross[1];
         vp->z = pt[2] + eps * cross[2];
+        vp->c0 = _vertex_colors[j];
         ++vp;
         vp->nx = pt[0];
         vp->ny = pt[1];
@@ -282,6 +288,7 @@ class canvas : public Fl_Gl_Window
         vp->x = pt[0] - eps * cross[0];
         vp->y = pt[1] - eps * cross[1];
         vp->z = pt[2] - eps * cross[2];
+        vp->c0 = _vertex_colors[j];
         ++vp;
         vp->nx = pt[0];
         vp->ny = pt[1];
@@ -289,6 +296,7 @@ class canvas : public Fl_Gl_Window
         vp->x = pt[0] + eps * cross2[0];
         vp->y = pt[1] + eps * cross2[1];
         vp->z = pt[2] + eps * cross2[2];
+        vp->c0 = _vertex_colors[j];
         ++vp;
         vp->nx = pt[0];
         vp->ny = pt[1];
@@ -296,13 +304,14 @@ class canvas : public Fl_Gl_Window
         vp->x = pt[0] - eps * cross2[0];
         vp->y = pt[1] - eps * cross2[1];
         vp->z = pt[2] - eps * cross2[2];
+        vp->c0 = _vertex_colors[j];
         ++vp;
-        ip[0] = i * 4 + 0;
-        ip[1] = i * 4 + 2;
-        ip[2] = i * 4 + 3;
-        ip[3] = i * 4 + 1;
-        ip[4] = i * 4 + 3;
-        ip[5] = i * 4 + 2;
+        ip[0] = j * 4 + 0;
+        ip[1] = j * 4 + 2;
+        ip[2] = j * 4 + 3;
+        ip[3] = j * 4 + 1;
+        ip[4] = j * 4 + 3;
+        ip[5] = j * 4 + 2;
         ip += 6;
         }      
       _engine.geometry_end(_geometry_id);
@@ -372,11 +381,10 @@ class canvas : public Fl_Gl_Window
       _engine.init(nullptr, RenderDoos::renderer_type::OPENGL);
 #endif
 
-      RenderDoos::simple_material* simple_mat = new RenderDoos::simple_material();
-      simple_mat->set_color(0xffffffff);      
-      _material = simple_mat;
+      RenderDoos::vertex_colored_material* mat = new RenderDoos::vertex_colored_material();     
+      _material = mat;
       _material->compile(&_engine);
-      _geometry_id = _engine.add_geometry(VERTEX_STANDARD);
+      _geometry_id = _engine.add_geometry(VERTEX_COLOR);
       _depth_id = _engine.add_texture(_mv_props.viewport_width, _mv_props.viewport_height, RenderDoos::texture_format_depth, (const uint16_t*)nullptr);
       }
 
@@ -389,6 +397,7 @@ class canvas : public Fl_Gl_Window
     RenderDoos::model_view_properties _mv_props;
     float _zoom;
     std::vector<std::array<float, 3>> _pointcloud;
+    std::vector<uint32_t> _vertex_colors;
       };
 
 class render_window : public Fl_Double_Window
