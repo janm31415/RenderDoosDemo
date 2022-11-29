@@ -109,7 +109,7 @@ public:
 #if defined(RENDERDOOS_METAL)
       void _init_engine(MTL::Device* device, CA::MetalDrawable* drawable)
       {
-        _engine.init(device, RenderDoos::renderer_type::METAL);
+        _engine.init(device, nullptr, RenderDoos::renderer_type::METAL);
 #else
         void _init_engine()
         {
@@ -118,7 +118,7 @@ public:
           if (GLEW_OK != err)
             throw std::runtime_error("GLEW initialization failed");
           glGetError(); // hack
-          _engine.init(nullptr, RenderDoos::renderer_type::OPENGL);
+          _engine.init(nullptr, nullptr, RenderDoos::renderer_type::OPENGL);
 #endif
           _material = new RenderDoos::shadertoy_material();
           

@@ -197,7 +197,7 @@ result[index] = inA[index] + inB[index];
 #if defined(RENDERDOOS_METAL)
     void _init_engine(MTL::Device* device, CA::MetalDrawable* drawable)
       {
-      _engine.init(device, RenderDoos::renderer_type::METAL);
+      _engine.init(device, nullptr, RenderDoos::renderer_type::METAL);
       }
 #else
     void _init_engine()
@@ -208,7 +208,7 @@ result[index] = inA[index] + inB[index];
         throw std::runtime_error("GLEW initialization failed");
       glGetError(); // hack
 
-      _engine.init(nullptr, RenderDoos::renderer_type::OPENGL);
+      _engine.init(nullptr, nullptr, RenderDoos::renderer_type::OPENGL);
       }
 #endif
       
@@ -222,7 +222,7 @@ void perform_metal_computation_without_window()
   {
   MTL::Device* p_device = MTL::CreateSystemDefaultDevice();
   RenderDoos::render_engine _engine;
-  _engine.init(p_device, RenderDoos::renderer_type::METAL);
+  _engine.init(p_device, nullptr, RenderDoos::renderer_type::METAL);
   int32_t sh = _engine.add_shader(nullptr, SHADER_COMPUTE, "add_arrays");
   int32_t ph = _engine.add_program(-1, -1, sh);
   std::vector<float> A, B, result;

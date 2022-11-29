@@ -369,7 +369,7 @@ class canvas : public Fl_Gl_Window
 #if defined(RENDERDOOS_METAL)
     void _init_engine(MTL::Device * device, CA::MetalDrawable * drawable)
       {
-      _engine.init(device, RenderDoos::renderer_type::METAL);
+      _engine.init(device, nullptr, RenderDoos::renderer_type::METAL);
 #else
     void _init_engine()
       {
@@ -378,7 +378,7 @@ class canvas : public Fl_Gl_Window
       if (GLEW_OK != err)
         throw std::runtime_error("GLEW initialization failed");
       glGetError(); // hack
-      _engine.init(nullptr, RenderDoos::renderer_type::OPENGL);
+      _engine.init(nullptr, nullptr, RenderDoos::renderer_type::OPENGL);
 #endif
 
       RenderDoos::vertex_colored_material* mat = new RenderDoos::vertex_colored_material();     
