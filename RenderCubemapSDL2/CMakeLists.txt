@@ -40,7 +40,8 @@ set(SHADERS
 if (APPLE)
 list(APPEND HDRS ../SDL-metal/SDL_metal.h)
 list(APPEND SRCS ../SDL-metal/SDL_metal.mm)
-list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
+#list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
+list(APPEND SHADERS cubemap.metal)
 endif (APPLE)
 
 if (WIN32)
