@@ -75,7 +75,7 @@ int _main(int argc, char** argv)
 #if defined(RENDERDOOS_METAL)
   SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
 
-  SDL_Window* window = SDL_CreateWindow("RenderTextureSDL2",
+  SDL_Window* window = SDL_CreateWindow("RenderShadertoySDL2",
     SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     w, h, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 
@@ -97,7 +97,7 @@ int _main(int argc, char** argv)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_Window* window = SDL_CreateWindow("RenderTextureSDL2",
+  SDL_Window* window = SDL_CreateWindow("RenderShadertoySDL2",
     SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     w, h,
     SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
