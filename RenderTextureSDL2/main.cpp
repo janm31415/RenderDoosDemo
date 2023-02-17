@@ -223,7 +223,7 @@ int _main(int argc, char** argv)
 
     RenderDoos::render_drawables drawables;
 #if defined(RENDERDOOS_METAL)
-    void* layer = SDL_Metal_GetLayer(_metalView);
+    void* layer = SDL_Metal_GetLayer(metalView);
     CA::MetalDrawable* drawable = next_drawable(layer);
     drawables.metal_drawable = (void*)drawable;
     drawables.metal_screen_texture = (void*)drawable->texture();
