@@ -34,7 +34,7 @@ set(SHADERS
 if (APPLE)
 list(APPEND HDRS ../fltk-metal/Fl_Metal_Window.h)
 list(APPEND SRCS ../fltk-metal/Fl_Metal_Window.mm)
-list(APPEND SHADERS kernel.metal)
+list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
 endif (APPLE)
 
 if (WIN32)
@@ -60,8 +60,11 @@ add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
-add_executable(ComputeAddArrays ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
-
+if (WIN32)
+add_executable(RenderShadertoyFltk WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+else()
+add_executable(RenderShadertoyFltk ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+endif(WIN32)
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
 source_group("ThirdParty/Glew" FILES ${GLEW})
@@ -69,7 +72,7 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(ComputeAddArrays
+ target_include_directories(RenderShadertoyFltk
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
@@ -79,7 +82,7 @@ endif (APPLE)
     ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
     )	
 	
-target_link_libraries(ComputeAddArrays    	   
+target_link_libraries(RenderShadertoyFltk    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
@@ -89,5 +92,5 @@ target_link_libraries(ComputeAddArrays
     )	
 
 if (WIN32)        # can only be true on Windows
-  target_link_libraries (ComputeAddArrays gdiplus)
+  target_link_libraries (RenderShadertoyFltk gdiplus)
 endif (WIN32)

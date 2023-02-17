@@ -18,12 +18,10 @@ if (UNIX)
 endif (UNIX)
 
 set(HDRS
-trackball.h
     )
 	
 set(SRCS
 main.cpp
-trackball.c
 )
 
 set(GLEW
@@ -34,8 +32,8 @@ set(SHADERS
 )
 
 if (APPLE)
-list(APPEND HDRS ../fltk-metal/Fl_Metal_Window.h)
-list(APPEND SRCS ../fltk-metal/Fl_Metal_Window.mm)
+list(APPEND HDRS ../SDL-metal/SDL_metal.h)
+list(APPEND SRCS ../SDL-metal/SDL_metal.mm)
 list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
 endif (APPLE)
 
@@ -62,9 +60,9 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
 if (WIN32)
-add_executable(RenderPointCloud WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderTextureSDL2 WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 else()
-add_executable(RenderPointCloud ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderTextureSDL2 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 endif(WIN32)
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
@@ -73,25 +71,20 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(RenderPointCloud
+ target_include_directories(RenderTextureSDL2
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
    	${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos/glew/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos/glew/include/glew
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fltk/
-    ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2/include/    
     )	
 	
-target_link_libraries(RenderPointCloud    	   
+target_link_libraries(RenderTextureSDL2    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
-    fltk
-    fltk_gl
-    fltk_images
+    SDL2
+    SDL2main
     )	
 
-if (WIN32)        # can only be true on Windows
-  target_link_libraries (RenderPointCloud gdiplus)
-endif (WIN32)

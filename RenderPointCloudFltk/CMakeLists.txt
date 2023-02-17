@@ -18,10 +18,12 @@ if (UNIX)
 endif (UNIX)
 
 set(HDRS
+trackball.h
     )
 	
 set(SRCS
 main.cpp
+trackball.c
 )
 
 set(GLEW
@@ -51,7 +53,6 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -msse4.1 -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -msse4.1 -pthread -std=c++11")
 endif (UNIX)
 
-
 # general build definitions
 add_definitions(-DNOMINMAX)
 add_definitions(-D_UNICODE)
@@ -61,9 +62,9 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
 if (WIN32)
-add_executable(RenderFramebuffer WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderPointCloudFltk WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 else()
-add_executable(RenderFramebuffer ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderPointCloudFltk ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 endif(WIN32)
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
@@ -72,7 +73,7 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(RenderFramebuffer
+ target_include_directories(RenderPointCloudFltk
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
@@ -82,7 +83,7 @@ endif (APPLE)
     ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
     )	
 	
-target_link_libraries(RenderFramebuffer    	   
+target_link_libraries(RenderPointCloudFltk    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
@@ -92,5 +93,5 @@ target_link_libraries(RenderFramebuffer
     )	
 
 if (WIN32)        # can only be true on Windows
-  target_link_libraries (RenderFramebuffer gdiplus)
+  target_link_libraries (RenderPointCloudFltk gdiplus)
 endif (WIN32)

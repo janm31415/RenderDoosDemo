@@ -61,9 +61,9 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
 if (WIN32)
-add_executable(RenderShadertoy WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderFramebufferFltk WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 else()
-add_executable(RenderShadertoy ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderFramebufferFltk ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 endif(WIN32)
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
@@ -72,7 +72,7 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(RenderShadertoy
+ target_include_directories(RenderFramebufferFltk
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
@@ -82,7 +82,7 @@ endif (APPLE)
     ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
     )	
 	
-target_link_libraries(RenderShadertoy    	   
+target_link_libraries(RenderFramebufferFltk    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
@@ -92,5 +92,5 @@ target_link_libraries(RenderShadertoy
     )	
 
 if (WIN32)        # can only be true on Windows
-  target_link_libraries (RenderShadertoy gdiplus)
+  target_link_libraries (RenderFramebufferFltk gdiplus)
 endif (WIN32)

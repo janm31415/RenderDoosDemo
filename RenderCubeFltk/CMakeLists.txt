@@ -18,10 +18,12 @@ if (UNIX)
 endif (UNIX)
 
 set(HDRS
+trackball.h
     )
 	
 set(SRCS
 main.cpp
+trackball.c
 )
 
 set(GLEW
@@ -60,9 +62,9 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
 if (WIN32)
-add_executable(RenderTexture WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderCubeFltk WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 else()
-add_executable(RenderTexture ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+add_executable(RenderCubeFltk ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
 endif(WIN32)
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
@@ -71,7 +73,7 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(RenderTexture
+ target_include_directories(RenderCubeFltk
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
@@ -81,7 +83,7 @@ endif (APPLE)
     ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
     )	
 	
-target_link_libraries(RenderTexture    	   
+target_link_libraries(RenderCubeFltk    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
@@ -91,5 +93,5 @@ target_link_libraries(RenderTexture
     )	
 
 if (WIN32)        # can only be true on Windows
-  target_link_libraries (RenderTexture gdiplus)
+  target_link_libraries (RenderCubeFltk gdiplus)
 endif (WIN32)

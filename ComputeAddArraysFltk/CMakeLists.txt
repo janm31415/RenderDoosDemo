@@ -18,12 +18,10 @@ if (UNIX)
 endif (UNIX)
 
 set(HDRS
-trackball.h
     )
 	
 set(SRCS
 main.cpp
-trackball.c
 )
 
 set(GLEW
@@ -36,7 +34,7 @@ set(SHADERS
 if (APPLE)
 list(APPEND HDRS ../fltk-metal/Fl_Metal_Window.h)
 list(APPEND SRCS ../fltk-metal/Fl_Metal_Window.mm)
-list(APPEND SHADERS ../RenderDoos/RenderDoos/shaders.metal)
+list(APPEND SHADERS kernel.metal)
 endif (APPLE)
 
 if (WIN32)
@@ -53,6 +51,7 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -msse4.1 -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -msse4.1 -pthread -std=c++11")
 endif (UNIX)
 
+
 # general build definitions
 add_definitions(-DNOMINMAX)
 add_definitions(-D_UNICODE)
@@ -61,11 +60,8 @@ add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-DMEMORY_LEAK_TRACKING)
 
-if (WIN32)
-add_executable(RenderCube WIN32 ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
-else()
-add_executable(RenderCube ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
-endif(WIN32)
+add_executable(ComputeAddArraysFltk ${HDRS} ${SRCS} ${GLEW} ${SHADERS})
+
 source_group("Header Files" FILES ${hdrs})
 source_group("Source Files" FILES ${srcs})
 source_group("ThirdParty/Glew" FILES ${GLEW})
@@ -73,7 +69,7 @@ if (APPLE)
 set_source_files_properties(${SHADERS} PROPERTIES LANGUAGE METAL)
 endif (APPLE)
 
- target_include_directories(RenderCube
+ target_include_directories(ComputeAddArraysFltk
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../RenderDoos
@@ -83,7 +79,7 @@ endif (APPLE)
     ${CMAKE_CURRENT_BINARY_DIR}/../fltk/
     )	
 	
-target_link_libraries(RenderCube    	   
+target_link_libraries(ComputeAddArraysFltk    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
     RenderDoos
@@ -93,5 +89,5 @@ target_link_libraries(RenderCube
     )	
 
 if (WIN32)        # can only be true on Windows
-  target_link_libraries (RenderCube gdiplus)
+  target_link_libraries (ComputeAddArraysFltk gdiplus)
 endif (WIN32)
