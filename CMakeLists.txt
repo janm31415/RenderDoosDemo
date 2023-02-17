@@ -22,6 +22,7 @@ add_subdirectory(RenderCubeFltk)
 add_subdirectory(RenderFramebufferFltk)
 add_subdirectory(RenderPointCloudFltk)
 add_subdirectory(RenderShadertoyFltk)
+add_subdirectory(RenderShadertoySDL2)
 add_subdirectory(RenderTextureFltk)
 add_subdirectory(RenderTextureSDL2)
 
