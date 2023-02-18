@@ -102,9 +102,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   vec3 planeSide = normalize(cross(planeNormal, planeUp));
   planeUp = cross(planeSide, planeNormal);
 	
-  float height = 2.0;
-
-
 	vec3 col = vec3(0.7, 0.7, 0.7);
     	
   vec3 sunDir = normalize(vec3(-1, -1, -1));
