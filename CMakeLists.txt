@@ -27,6 +27,7 @@ add_subdirectory(RenderPointCloudFltk)
 add_subdirectory(RenderPointCloudSDL2)
 add_subdirectory(RenderShadertoyFltk)
 add_subdirectory(RenderShadertoySDL2)
+add_subdirectory(RenderTerrainSDL2)
 add_subdirectory(RenderTextureFltk)
 add_subdirectory(RenderTextureSDL2)
 
