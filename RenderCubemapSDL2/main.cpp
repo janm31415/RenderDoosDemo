@@ -303,7 +303,7 @@ int _main(int argc, char** argv)
         }
       } // while (SDL_PollEvent(&event))
 
-    if (md.mouse_x != md.prev_mouse_x || md.mouse_y == md.prev_mouse_y)
+    if (md.mouse_x != md.prev_mouse_x || md.mouse_y != md.prev_mouse_y)
       {
       if (md.dragging)
         {
