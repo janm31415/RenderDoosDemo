@@ -41,7 +41,7 @@ float terrain( in vec2 p)
    p = scalePosition(p);
    if (p.x < 0.0 || p.x >= 1.0 || p.y < 0.0 || p.y >= 1.0)
      return 0.0;   
-   return texture( Heightmap, p).x;   
+   return texture( Heightmap, p).x*3;   
 }
 
 float map( in vec3 p )
@@ -104,12 +104,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	
 	vec3 col = vec3(0.7, 0.7, 0.7);
     	
-  vec3 sunDir = normalize(vec3(-1, -1, -1));
-  vec3 ambientLight = vec3(0.3);
-  vec3 sunLight = vec3(0.9);
+  vec3 sunDir = normalize(vec3(0, +0.5, -1));
+  //vec3 ambientLight = vec3(0.3);
+  //vec3 sunLight = vec3(0.9);
     
   vec3 ro = (Camera*vec4(0,0,0,1)).xyz;
-  ro.y += 1;
+  ro.y += 3;
   vec3 rx = (Camera*vec4(1,0,0,0)).xyz;
   vec3 ry = (Camera*vec4(0,1,0,0)).xyz;
   vec3 rz = (Camera*vec4(0,0,1,0)).xyz;
@@ -134,16 +134,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     {	
 		// Get some information about our intersection
 		vec3 pos = ro + t * rd;
-		vec3 normal = calcNormal(pos, t);
-        
-    float shadow = intersect(pos, -sunDir) > 0.0 ? 0.0 : 1.0;		
+		vec3 normal = calcNormal(pos, t);       	
 		
-		vec3 texCol = getColor(pos);
+		vec3 texCol = vec3(pow(getColor(pos), vec3(0.5)));
 		
-		col = texCol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * shadow * 0.9 + 0.3 * texCol; 
+    col = texCol* clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + texCol*0.1;
 	  }
 	
-	fragColor = vec4(pow(col*1.2, vec3(2.2)), 1.0);
+	fragColor =vec4(pow(col*2.0, vec3(2.2)), 1.0);
 }
 
 void main() 
@@ -160,7 +158,7 @@ terrain_material::terrain_material()
   shader_program_handle = -1;
   proj_handle = -1;
   cam_handle = -1;
-  res_handle = -1;  
+  res_handle = -1;
   texture_heightmap = -1;
   texture_normalmap = -1;
   texture_colormap = -1;
@@ -204,7 +202,7 @@ void terrain_material::set_texture_colormap(int32_t id)
 void terrain_material::compile(RenderDoos::render_engine* engine)
   {
   if (engine->get_renderer_type() == RenderDoos::renderer_type::METAL)
-    {  
+    {
     vs_handle = engine->add_shader(nullptr, SHADER_VERTEX, "terrain_material_vertex_shader");
     fs_handle = engine->add_shader(nullptr, SHADER_FRAGMENT, "terrain_material_fragment_shader");
     }

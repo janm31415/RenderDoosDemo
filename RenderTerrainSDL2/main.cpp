@@ -37,15 +37,6 @@
 
 #include <iostream>
 
-struct mouse_data
-  {
-  float mouse_x;
-  float mouse_y;
-  float prev_mouse_x;
-  float prev_mouse_y;
-  bool dragging;
-  };
-
 int _main(int argc, char** argv)
   {
   SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
@@ -106,13 +97,6 @@ int _main(int argc, char** argv)
 
   engine.init(nullptr, nullptr, RenderDoos::renderer_type::OPENGL);
 #endif 
-
-  mouse_data md;
-  md.mouse_x = 0.f;
-  md.mouse_y = 0.f;
-  md.prev_mouse_x = 0.f;
-  md.prev_mouse_y = 0.f;
-  md.dragging = false;
 
   RenderDoos::model_view_properties mv_props;
   mv_props.init(w, h);
@@ -210,6 +194,8 @@ int _main(int argc, char** argv)
     bool move_backward = false;
     bool strafe_left = false;
     bool strafe_right = false;
+    bool move_up = false;
+    bool move_down = false;
     bool turn_left = false;
     bool turn_right = false;
     bool turn_up = false;
@@ -236,27 +222,7 @@ int _main(int argc, char** argv)
           break;
           }
           }
-        }
-        case SDL_MOUSEMOTION:
-        {
-        md.prev_mouse_x = md.mouse_x;
-        md.prev_mouse_y = md.mouse_y;
-        md.mouse_x = float(event.motion.x);
-        md.mouse_y = float(event.motion.y);
-        break;
-        }
-        case SDL_MOUSEBUTTONDOWN:
-        {
-        if (event.button.button == 1)
-          md.dragging = true;
-        break;
-        }
-        case SDL_MOUSEBUTTONUP:
-        {
-        if (event.button.button == 1)
-          md.dragging = false;
-        break;
-        }
+        }        
         case SDL_MOUSEWHEEL:
         {
         if (event.wheel.y > 0)
@@ -331,13 +297,21 @@ int _main(int argc, char** argv)
 
     mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
     
+    bool shift = keyb.is_down(SDLK_LSHIFT) || keyb.is_down(SDLK_RSHIFT);
+    
     if (keyb.is_down(SDLK_w))
       {
-      move_forward = true;
+      if (shift)
+        move_up = true;
+      else
+        move_forward = true;
       }
     if (keyb.is_down(SDLK_s))
       {
-      move_backward = true;
+      if (shift)
+        move_down = true;
+      else
+        move_backward = true;
       }
     if (keyb.is_down(SDLK_a))
       {
@@ -348,12 +322,13 @@ int _main(int argc, char** argv)
       strafe_right = true;
       }
 
+    const float step_size = 0.1;
     if (move_forward)
       {
       RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
       RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
       RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-      tr = tr + 0.1 * dir;
+      tr = tr + step_size * dir;
       RenderDoos::set_translation(camera_position_inv, tr);
       mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
       }
@@ -362,7 +337,7 @@ int _main(int argc, char** argv)
       RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
       RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
       RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-      tr = tr - 0.1 * dir;
+      tr = tr - step_size * dir;
       RenderDoos::set_translation(camera_position_inv, tr);
       mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
       }
@@ -371,7 +346,7 @@ int _main(int argc, char** argv)
       RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
       RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
       RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-      tr = tr - 0.1 * dir;
+      tr = tr - step_size * dir;
       RenderDoos::set_translation(camera_position_inv, tr);
       mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
       }
@@ -380,9 +355,17 @@ int _main(int argc, char** argv)
       RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
       RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
       RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-      tr = tr + 0.1 * dir;
+      tr = tr + step_size * dir;
       RenderDoos::set_translation(camera_position_inv, tr);
       mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+      }
+    if (move_up)
+      {
+      mv_props.camera_space[13] -= step_size;
+      }
+    if (move_down)
+      {
+      mv_props.camera_space[13] += step_size;
       }
 
     RenderDoos::render_drawables drawables;
