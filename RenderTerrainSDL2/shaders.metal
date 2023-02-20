@@ -41,7 +41,7 @@ float terrain( float2 pos, texture2d<float> Heightmap, sampler sampler2d)
   float2 p = scalePosition(pos);
   if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0)
     return 0.0;
-  return Heightmap.sample(sampler2d, p).r;
+  return Heightmap.sample(sampler2d, p).r*3.0;
 }
 
 float map( float3 p,  texture2d<float> Heightmap, sampler sampler2d)
@@ -94,12 +94,10 @@ fragment float4 terrain_material_fragment_shader(const VertexOut vertexIn [[stag
 	
 	float3 col = float3(0.7, 0.7, 0.7);
     	
-  float3 sunDir = normalize(float3(-1, -1, -1));
-  float3 ambientLight = float3(0.3);
-  float3 sunLight = float3(0.9);
+  float3 sunDir = normalize(float3(0, 0.5, -1));
     
   float3 ro = (input.camera_matrix*float4(0,0,0,1)).xyz;
-  ro.y += 1;
+  ro.y += 3;
   float3 rx = (input.camera_matrix*float4(1,0,0,0)).xyz;
   float3 ry = (input.camera_matrix*float4(0,1,0,0)).xyz;
   float3 rz = (input.camera_matrix*float4(0,0,1,0)).xyz;
@@ -125,13 +123,11 @@ fragment float4 terrain_material_fragment_shader(const VertexOut vertexIn [[stag
 		// Get some information about our intersection
 		float3 pos = ro + t * rd;
 		float3 normal = calcNormal(pos, t, normalmap, sampler2d);
-        
-    float shadow = intersect(pos, -sunDir, heightmap, sampler2d) > 0.0 ? 0.0 : 1.0;
 		
-		float3 texCol = getColor(pos, colormap, sampler2d);
+		float3 texCol = float3(pow(getColor(pos, colormap, sampler2d), float3(0.5)));
 		
-		col = texCol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * shadow * 0.9 + 0.3 * texCol;
+		col = texCol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + texCol * 0.1;
 	  }
 	
-	return float4(pow(col*1.2, float3(2.2)), 1.0);
+	return float4(pow(col*2.0, float3(2.2)), 1.0);
 }
