@@ -19,6 +19,7 @@ endif (UNIX)
 
 set(HDRS
 image.h
+keyboard.h
 material.h
     )
 	

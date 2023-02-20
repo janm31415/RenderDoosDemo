@@ -31,6 +31,7 @@
 #include "RenderDoos/render_engine.h"
 #include "material.h"
 #include "image.h"
+#include "keyboard.h"
 
 #include "RenderDoos/types.h"
 
@@ -196,12 +197,28 @@ int _main(int argc, char** argv)
 
   engine.geometry_end(geometry_id);
   bool quit = false;
+  keyboard_handler keyb;
 
   while (!quit)
     {
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    int mouse_rel_x = 0;
+    int mouse_rel_y = 0;
+    SDL_GetRelativeMouseState(&mouse_rel_x, &mouse_rel_y);
+
+    bool move_forward = false;
+    bool move_backward = false;
+    bool strafe_left = false;
+    bool strafe_right = false;
+    bool turn_left = false;
+    bool turn_right = false;
+    bool turn_up = false;
+    bool turn_down = false;
+
     SDL_Event event;
     while (SDL_PollEvent(&event))
       {
+      keyb.handle_event(event);
       switch (event.type)
         {
         case SDL_QUIT:
@@ -216,46 +233,6 @@ int _main(int argc, char** argv)
           case SDLK_ESCAPE:
           {
           quit = true;
-          break;
-          }
-          case SDLK_w:
-          {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr + 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
-          break;
-          }
-          case SDLK_s:
-          {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr - 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
-          break;
-          }
-          case SDLK_a:
-          {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr - 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
-          break;
-          }
-          case SDLK_d:
-          {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr + 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
           break;
           }
           }
@@ -284,53 +261,128 @@ int _main(int argc, char** argv)
         {
         if (event.wheel.y > 0)
           {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr - 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+          move_backward = true;
           }
         else if (event.wheel.y < 0)
           {
-          RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-          RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
-          RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
-          tr = tr + 0.1 * dir;
-          RenderDoos::set_translation(camera_position_inv, tr);
-          mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+          move_forward = true;
           }
         break;
         }
         }
       } // while (SDL_PollEvent(&event))
 
-    if (md.mouse_x != md.prev_mouse_x || md.mouse_y != md.prev_mouse_y)
+    float angle_x = 0.f;
+    float angle_y = 0.f;
+
+    if (mouse_rel_x || mouse_rel_y)
       {
-      if (md.dragging)
+      float diff_x = (float)mouse_rel_x;
+      float diff_y = (float)mouse_rel_y;
+
+      if (diff_x < 0.f)
         {
-        float anglex = (md.mouse_x - md.prev_mouse_x) * 0.01f;
-        float angley = (md.mouse_y - md.prev_mouse_y) * 0.01f;
-        euler_y += anglex;
-        euler_x += angley;
-
-        RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
-        RenderDoos::float4 position(camera_position_inv[12], camera_position_inv[13], camera_position_inv[14], 1);
-        auto rot_y = RenderDoos::make_rotation(position, RenderDoos::float4(0, 1, 0, 0), euler_y);
-        auto rot_x = RenderDoos::make_rotation(position, RenderDoos::float4(1, 0, 0, 0), euler_x);
-
-        auto flip_rot = RenderDoos::make_rotation(position, RenderDoos::float4(1, 0, 0, 0), 3.1415926535897f / 2.f);
-
-        camera_position_inv = matrix_matrix_multiply(rot_y, rot_x);
-        camera_position_inv[12] = position[0];
-        camera_position_inv[13] = position[1];
-        camera_position_inv[14] = position[2];
-
-        mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
-
-        md.prev_mouse_x = md.mouse_x;
-        md.prev_mouse_y = md.mouse_y;
+        turn_left = true;
+        angle_x = std::abs(diff_x / (float)w);
         }
+      if (diff_x > 0.f)
+        {
+        turn_right = true;
+        angle_x = std::abs(diff_x / (float)w);
+        }
+      if (diff_y < 0.f)
+        {
+        turn_up = true;
+        angle_y = std::abs(diff_y / (float)h);
+        }
+      if (diff_y > 0.f)
+        {
+        turn_down = true;
+        angle_y = std::abs(diff_y / (float)h);
+        }
+      }
+    if (turn_left)
+      {
+      euler_y -= angle_x;
+      }
+    if (turn_right)
+      {
+      euler_y += angle_x;
+      }
+    if (turn_up)
+      {
+      euler_x -= angle_y;
+      }
+    if (turn_down)
+      {
+      euler_x += angle_y;
+      }
+    RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
+    RenderDoos::float4 position(camera_position_inv[12], camera_position_inv[13], camera_position_inv[14], 1);
+    auto rot_y = RenderDoos::make_rotation(position, RenderDoos::float4(0, 1, 0, 0), euler_y);
+    auto rot_x = RenderDoos::make_rotation(position, RenderDoos::float4(1, 0, 0, 0), euler_x);
+
+    auto flip_rot = RenderDoos::make_rotation(position, RenderDoos::float4(1, 0, 0, 0), 3.1415926535897f / 2.f);
+
+    camera_position_inv = matrix_matrix_multiply(rot_y, rot_x);
+    camera_position_inv[12] = position[0];
+    camera_position_inv[13] = position[1];
+    camera_position_inv[14] = position[2];
+
+    mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+    
+    if (keyb.is_down(SDLK_w))
+      {
+      move_forward = true;
+      }
+    if (keyb.is_down(SDLK_s))
+      {
+      move_backward = true;
+      }
+    if (keyb.is_down(SDLK_a))
+      {
+      strafe_left = true;
+      }
+    if (keyb.is_down(SDLK_d))
+      {
+      strafe_right = true;
+      }
+
+    if (move_forward)
+      {
+      RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
+      RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
+      RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
+      tr = tr + 0.1 * dir;
+      RenderDoos::set_translation(camera_position_inv, tr);
+      mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+      }
+    if (move_backward)
+      {
+      RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
+      RenderDoos::float4 dir = RenderDoos::get_z_axis(camera_position_inv);
+      RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
+      tr = tr - 0.1 * dir;
+      RenderDoos::set_translation(camera_position_inv, tr);
+      mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+      }
+    if (strafe_left)
+      {
+      RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
+      RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
+      RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
+      tr = tr - 0.1 * dir;
+      RenderDoos::set_translation(camera_position_inv, tr);
+      mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
+      }
+    if (strafe_right)
+      {
+      RenderDoos::float4x4 camera_position_inv = RenderDoos::invert_orthonormal(mv_props.camera_space);
+      RenderDoos::float4 dir = RenderDoos::get_x_axis(camera_position_inv);
+      RenderDoos::float4 tr = RenderDoos::get_translation(camera_position_inv);
+      tr = tr + 0.1 * dir;
+      RenderDoos::set_translation(camera_position_inv, tr);
+      mv_props.camera_space = RenderDoos::invert_orthonormal(camera_position_inv);
       }
 
     RenderDoos::render_drawables drawables;
@@ -362,7 +414,7 @@ int _main(int argc, char** argv)
     SDL_GL_SwapWindow(window);
 #endif
 
-    } //while (!quit)
+      } //while (!quit)
 
   engine.remove_texture(heightmap_id);
   engine.remove_texture(normalmap_id);
@@ -370,7 +422,7 @@ int _main(int argc, char** argv)
 
   SDL_Quit();
   return 0;
-  }
+    }
 
 #ifdef _WIN32
 int WINAPI wWinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PWSTR /*pCmdLine*/, int /*nCmdShow*/)
