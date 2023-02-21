@@ -30,7 +30,7 @@ vertex VertexOut terrain_material_vertex_shader(const device VertexIn *vertices 
 
 float2 scalePosition(float2 p)
 {
-  p = p*0.05;
+  p = p*0.02;
   p = p+float2(0.5);
   p = mix(float2(0.5, 0.0), float2(1.0, 0.5), p);
   return p;
@@ -41,7 +41,7 @@ float terrain( float2 pos, texture2d<float> Heightmap, sampler sampler2d)
   float2 p = scalePosition(pos);
   if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0)
     return 0.0;
-  return Heightmap.sample(sampler2d, p).r*3.0;
+  return Heightmap.sample(sampler2d, p).r*5.0;
 }
 
 float map( float3 p,  texture2d<float> Heightmap, sampler sampler2d)
@@ -71,12 +71,12 @@ float3 calcNormal( float3 pos, float t, texture2d<float> Normalmap, sampler samp
   return Normalmap.sample(sampler2d, p).rgb;
 }
 
-float3 getColor(float3 pos, texture2d<float> Colormap, sampler sampler2d)
+float4 getColor(float3 pos, texture2d<float> Colormap, sampler sampler2d)
 {
   float2 p = scalePosition(pos.xz);
   if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0)
-    return float3(0,0,0);
-  return Colormap.sample(sampler2d, p).rgb;
+    return float4(0,0,0,0);
+  return Colormap.sample(sampler2d, p);
 }
 
 fragment float4 terrain_material_fragment_shader(const VertexOut vertexIn [[stage_in]], texture2d<float> heightmap [[texture(0)]], texture2d<float> normalmap [[texture(1)]], texture2d<float> colormap [[texture(2)]], sampler sampler2d [[sampler(0)]], constant TerrainMaterialUniforms& input [[buffer(10)]]) {
@@ -93,8 +93,6 @@ fragment float4 terrain_material_fragment_shader(const VertexOut vertexIn [[stag
   planeUp = cross(planeSide, planeNormal);
 	
 	float3 col = float3(0.7, 0.7, 0.7);
-    	
-  float3 sunDir = normalize(float3(0, 0.5, -1));
     
   float3 ro = (input.camera_matrix*float4(0,0,0,1)).xyz;
   ro.y += 3;
@@ -123,11 +121,16 @@ fragment float4 terrain_material_fragment_shader(const VertexOut vertexIn [[stag
 		// Get some information about our intersection
 		float3 pos = ro + t * rd;
 		float3 normal = calcNormal(pos, t, normalmap, sampler2d);
-		
-		float3 texCol = float3(pow(getColor(pos, colormap, sampler2d), float3(0.5)));
-		
-		col = texCol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + texCol * 0.1;
+		float4 texCol = getColor(pos, colormap, sampler2d);
+    if (texCol.a > 0)
+      {
+      float3 terraincol = float3(pow(texCol.rgb, float3(0.5)));
+		  float3 sunDir = normalize(float3(0, 0.5, -1));
+      terraincol = terraincol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + terraincol * 0.1;
+      terraincol = pow(terraincol*1.2, float3(2.2));
+      col = terraincol*texCol.a + col*(1-texCol.a);
+      }
 	  }
 	
-	return float4(pow(col*2.0, float3(2.2)), 1.0);
+	return float4(col, 1.0);
 }
