@@ -30,7 +30,7 @@ out vec4 FragColor;
 
 vec2 scalePosition(in vec2 p)
 {
-  p = p*0.05;
+  p = p*0.02;
   p = p+vec2(0.5);
   p = mix(vec2(0.5, 0.0), vec2(1.0, 0.5), p);
   return p;
@@ -41,7 +41,7 @@ float terrain( in vec2 p)
    p = scalePosition(p);
    if (p.x < 0.0 || p.x >= 1.0 || p.y < 0.0 || p.y >= 1.0)
      return 0.0;   
-   return texture( Heightmap, p).x*3;   
+   return texture( Heightmap, p).x*5;   
 }
 
 float map( in vec3 p )
@@ -49,12 +49,12 @@ float map( in vec3 p )
     return p.y - terrain(p.xz);
 }
 
-vec3 getColor( in vec3 pos )
+vec4 getColor( in vec3 pos )
 {
   vec2 p = scalePosition(pos.xz);
   if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0)
-    return vec3(0,0,0);
-  return texture( Colormap, p).rgb;
+    return vec4(0,0,0,0);
+  return texture( Colormap, p);
 }
 
 vec3 calcNormal( in vec3 pos, float t )
@@ -62,7 +62,7 @@ vec3 calcNormal( in vec3 pos, float t )
 #if 1
   vec2 p = scalePosition(pos.xz);
   if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0)
-    return vec3(0,1,0);
+    return vec3(0,-1,0);
   return texture( Normalmap, p).rgb;
 #else
 	float e = 0.001;
@@ -102,11 +102,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   vec3 planeSide = normalize(cross(planeNormal, planeUp));
   planeUp = cross(planeSide, planeNormal);
 	
-	vec3 col = vec3(0.7, 0.7, 0.7);
-    	
-  vec3 sunDir = normalize(vec3(0, +0.5, -1));
-  //vec3 ambientLight = vec3(0.3);
-  //vec3 sunLight = vec3(0.9);
+	vec3 col = vec3(0.7, 0.7, 0.7);    
     
   vec3 ro = (Camera*vec4(0,0,0,1)).xyz;
   ro.y += 3;
@@ -136,12 +132,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		vec3 pos = ro + t * rd;
 		vec3 normal = calcNormal(pos, t);       	
 		
-		vec3 texCol = vec3(pow(getColor(pos), vec3(0.5)));
-		
-    col = texCol* clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + texCol*0.1;
+		vec4 texCol = getColor(pos);
+		if (texCol.a > 0)
+      {
+      vec3 terraincol = vec3(pow(texCol.rgb, vec3(0.5)));
+      vec3 sunDir = normalize(vec3(0, +0.5, -1));
+      terraincol = terraincol * clamp(-dot(normal, sunDir), 0.0f, 1.0f) * 0.9 + terraincol*0.1;
+      terraincol = pow(terraincol*1.2, vec3(2.2));
+      col = terraincol*texCol.a + col*(1-texCol.a);
+      }
 	  }
 	
-	fragColor =vec4(pow(col*2.0, vec3(2.2)), 1.0);
+	fragColor = vec4(col, 1.0);
 }
 
 void main() 
