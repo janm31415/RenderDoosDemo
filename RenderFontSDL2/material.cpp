@@ -188,6 +188,7 @@ void font_material::compile(RenderDoos::render_engine* engine)
 void font_material::bind(RenderDoos::render_engine* engine)
   {
   engine->set_blending_enabled(true);
+  engine->set_blending_function(RenderDoos::blending_type::src_alpha, RenderDoos::blending_type::one_minus_src_alpha);
   engine->bind_program(shader_program_handle);
 
   engine->set_uniform(width_handle, (void*)&atlas_width);
