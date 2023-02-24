@@ -187,6 +187,7 @@ void font_material::compile(RenderDoos::render_engine* engine)
 
 void font_material::bind(RenderDoos::render_engine* engine)
   {
+  engine->set_blending_enabled(true);
   engine->bind_program(shader_program_handle);
 
   engine->set_uniform(width_handle, (void*)&atlas_width);
@@ -224,9 +225,8 @@ namespace
     }
   }
 
-void font_material::render_text(RenderDoos::render_engine* engine, char* text, float x, float y, float sx, float sy, uint32_t clr)
+void font_material::render_text(RenderDoos::render_engine* engine, const char* text, float x, float y, float sx, float sy, uint32_t clr)
   {
-  engine->set_blending_enabled(true);
   if (geometry_id >= 0)
     engine->remove_geometry(geometry_id);
   std::vector<text_vert_t> verts(6 * strlen(text));
@@ -238,7 +238,7 @@ void font_material::render_text(RenderDoos::render_engine* engine, char* text, f
   float green = ((clr>>8) & 255) / 255.f;
   float blue = ((clr>>16) & 255) / 255.f;
 
-  char* p;
+  const char* p;
   for (p = text; *p; ++p) 
     {
     float x2 = x + c[*p].bl * sx;

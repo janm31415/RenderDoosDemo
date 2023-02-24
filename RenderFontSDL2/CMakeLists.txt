@@ -36,7 +36,7 @@ set(SHADERS
 if (APPLE)
 list(APPEND HDRS ../SDL-metal/SDL_metal.h)
 list(APPEND SRCS ../SDL-metal/SDL_metal.mm)
-list(APPEND SHADERS shaders.metal)
+list(APPEND SHADERS font_shaders.metal ../RenderDoos/RenderDoos/shaders.metal)
 endif (APPLE)
 
 if (WIN32)

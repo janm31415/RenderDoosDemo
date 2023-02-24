@@ -40,7 +40,7 @@ class font_material : public RenderDoos::material
     virtual void bind(RenderDoos::render_engine* engine);
     virtual void destroy(RenderDoos::render_engine* engine);
 
-    void render_text(RenderDoos::render_engine* engine, char* text, float x, float y, float sx, float sy, uint32_t clr);
+    void render_text(RenderDoos::render_engine* engine, const char* text, float x, float y, float sx, float sy, uint32_t clr);
 
   private:
 

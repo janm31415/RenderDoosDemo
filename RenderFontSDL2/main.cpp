@@ -249,14 +249,15 @@ int _main(int argc, char** argv)
     engine.geometry_draw(geometry_id);
 
     engine.renderpass_end();
-
+#if 1
     descr.clear_flags = CLEAR_DEPTH;
     engine.renderpass_begin(descr);
 
     fmat.bind(&engine);
-    fmat.render_text(&engine, "Hello, world!", -0.35, 0.0, 2.0/800.0, 2.0/450.0, 0xffffcc33);
+    const char* text = "Hello, world!";
+    fmat.render_text(&engine, text, -0.35, 0.0, 2.0/800.0, 2.0/450.0, 0xffffcc33);
     engine.renderpass_end();
-
+#endif
 
     engine.frame_end();
     std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(10.0));
