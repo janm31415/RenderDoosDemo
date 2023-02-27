@@ -232,6 +232,9 @@ void font_material::render_text(RenderDoos::render_engine* engine, const char* t
   {
   if (geometry_id >= 0)
     engine->remove_geometry(geometry_id);
+
+  const float x_orig = x;
+
   std::vector<text_vert_t> verts(6 * strlen(text));
   int n = 0;
 
@@ -244,6 +247,13 @@ void font_material::render_text(RenderDoos::render_engine* engine, const char* t
   const char* p;
   for (p = text; *p; ++p) 
     {
+    if (*p == 10)
+      {
+      y -= c['@'].bh * sy;
+      x = x_orig;
+      continue;
+      }
+
     float x2 = x + c[*p].bl * sx;
     float y2 = -y - c[*p].bt * sy;
     float w = c[*p].bw * sx;
