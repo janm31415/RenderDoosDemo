@@ -61,6 +61,8 @@ font_material::font_material()
 
 font_material::~font_material()
   {
+  FT_Done_Face(_face);
+  FT_Done_FreeType(_ft);
   }
 
 void font_material::_init_font(RenderDoos::render_engine* engine)
