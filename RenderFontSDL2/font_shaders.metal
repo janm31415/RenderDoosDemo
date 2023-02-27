@@ -19,7 +19,7 @@ struct FontVertexOut {
 };
 
 vertex FontVertexOut font_material_vertex_shader(const device FontVertexIn *vertices [[buffer(0)]], uint vertexId [[vertex_id]], constant FontMaterialUniforms& input [[buffer(10)]]) {
-  float4 pos(vertices[vertexId].position, 1);
+  float4 pos(vertices[vertexId].position, 0, 1);
   FontVertexOut out;
   out.position = pos;
   out.texcoord = vertices[vertexId].textureCoordinates;
