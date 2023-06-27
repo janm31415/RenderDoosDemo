@@ -52,10 +52,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "/W4 /MP /GF /O2 /Ob2 /Oi /Ot /MD /Zi")
 endif(WIN32)
 
 if (UNIX)
-#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -msse4.1 -pthread")
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -msse4.1 -pthread -std=c++11")
-#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -msse4.1 -pthread")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -msse4.1 -pthread -std=c++11")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -msse4.1 -pthread")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -msse4.1 -pthread -std=c++11")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -msse4.1 -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -msse4.1 -pthread -std=c++11")
 endif (UNIX)
 
 # general build definitions
@@ -89,12 +89,12 @@ endif (APPLE)
     )	
 	
 target_link_libraries(RenderCubeFltk    	   
-    #${OPENGL_LIBRARIES}
-    #${GLX_LIBRARIES}
+    ${OPENGL_LIBRARIES}
+    ${GLX_LIBRARIES}
     RenderDoos
     fltk
-    #fltk_gl
-    #fltk_images
+    fltk_gl
+    fltk_images
     )	
 
 if (WIN32)        # can only be true on Windows
