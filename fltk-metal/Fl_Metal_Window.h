@@ -23,7 +23,7 @@ public:
   
 private:
   
-  virtual void _draw(MTL::Device* device, CA::MetalDrawable* drawable) = 0;
+  virtual void _draw(MTL::Device* device, MTL::Drawable* drawable, MTL::Texture* texture) = 0;
   
 private:
   bool _initialised;

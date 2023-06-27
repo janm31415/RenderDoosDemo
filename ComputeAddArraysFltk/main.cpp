@@ -94,10 +94,10 @@ class canvas : public Fl_Gl_Window
       }
 
 #if defined(RENDERDOOS_METAL)
-virtual void _draw(MTL::Device* device, CA::MetalDrawable* drawable)
+virtual void _draw(MTL::Device* device, MTL::Drawable* drawable, MTL::Texture* texture)
      {
      if (!_engine.is_initialized())
-       _init_engine(device, drawable);
+       _init_engine(device, drawable, texture);
 #else
     virtual void draw()
       {
@@ -195,7 +195,7 @@ result[index] = inA[index] + inB[index];
 
   private:
 #if defined(RENDERDOOS_METAL)
-    void _init_engine(MTL::Device* device, CA::MetalDrawable* drawable)
+    void _init_engine(MTL::Device* device, MTL::Drawable* drawable, MTL::Texture* texture)
       {
       _engine.init(device, nullptr, RenderDoos::renderer_type::METAL);
       }

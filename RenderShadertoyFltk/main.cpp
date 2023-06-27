@@ -107,7 +107,7 @@ public:
     private:
       
 #if defined(RENDERDOOS_METAL)
-      void _init_engine(MTL::Device* device, CA::MetalDrawable* drawable)
+      void _init_engine(MTL::Device* device, MTL::Drawable* drawable)
       {
         _engine.init(device, nullptr, RenderDoos::renderer_type::METAL);
 #else
@@ -200,7 +200,7 @@ public:
         }
         
 #if defined(RENDERDOOS_METAL)
-        virtual void _draw(MTL::Device* device, CA::MetalDrawable* drawable)
+        virtual void _draw(MTL::Device* device, MTL::Drawable* drawable, MTL::Texture* texture)
         {
           if (!_engine.is_initialized())
             _init_engine(device, drawable);
@@ -213,7 +213,7 @@ public:
             RenderDoos::render_drawables drawables;
 #if defined(RENDERDOOS_METAL)
             drawables.metal_drawable = (void*)drawable;
-            drawables.metal_screen_texture = (void*)drawable->texture();
+            drawables.metal_screen_texture = (void*)texture;
 #endif
             _engine.frame_begin(drawables);
             auto tic = std::chrono::high_resolution_clock::now();

@@ -5,7 +5,7 @@ endif (WIN32)
 
 if (UNIX)
   if (APPLE)
-    set(OPENGL_LIBRARIES "/System/Library/Frameworks/OpenGL.framework/OpenGL" CACHE FILEPATH "opengl lib file")
+    set(OPENGL_LIBRARIES "" CACHE FILEPATH "opengl lib file")
     set(GLX_LIBRARIES "")
     
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework QuartzCore -framework Metal")
@@ -26,9 +26,14 @@ main.cpp
 trackball.c
 )
 
+if (APPLE)
+set(GLEW
+)
+else (APPLE)
 set(GLEW
 glew.cpp
 )
+endif (APPLE)
 
 set(SHADERS
 )
@@ -82,6 +87,13 @@ endif (APPLE)
     ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2/include/    
     )	
 	
+if (APPLE)
+target_link_libraries(RenderCubeSDL2
+    RenderDoos
+    SDL2
+    SDL2main
+    )
+else(APPLE)
 target_link_libraries(RenderCubeSDL2    	   
     ${OPENGL_LIBRARIES}
     ${GLX_LIBRARIES}
@@ -89,4 +101,4 @@ target_link_libraries(RenderCubeSDL2
     SDL2
     SDL2main
     )	
-
+endif(APPLE)

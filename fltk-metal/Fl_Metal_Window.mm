@@ -36,8 +36,10 @@ void Fl_Metal_Window::draw()
   NSView *view = [fl_xid(this) contentView];
   CAMetalLayer* metal_layer = (CAMetalLayer*)view.layer;
   id<CAMetalDrawable> currentDrawable = [metal_layer nextDrawable];
-  CA::MetalDrawable* pMetalCppDrawable  = ( __bridge CA::MetalDrawable* ) currentDrawable;
-  _draw(( __bridge MTL::Device* )metal_layer.device, pMetalCppDrawable);
+  MTL::Drawable* pMetalCppDrawable = (__bridge MTL::Drawable*) currentDrawable;
+  id<MTLTexture> metalTexture = [currentDrawable texture];
+  MTL::Texture* pMetalCppTexture = (__bridge MTL::Texture*) metalTexture;
+  _draw(( __bridge MTL::Device* )metal_layer.device, pMetalCppDrawable, pMetalCppTexture);
 }
 
 void Fl_Metal_Window::redraw()

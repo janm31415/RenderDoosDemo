@@ -5,7 +5,7 @@ endif (WIN32)
 
 if (UNIX)
   if (APPLE)
-    set(OPENGL_LIBRARIES "/System/Library/Frameworks/OpenGL.framework/OpenGL" CACHE FILEPATH "opengl lib file")
+    set(OPENGL_LIBRARIES "" CACHE FILEPATH "opengl lib file")
     set(GLX_LIBRARIES "")
     
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework QuartzCore -framework Metal")
@@ -26,9 +26,14 @@ main.cpp
 material.cpp
 )
 
+if (APPLE)
+set(GLEW
+)
+else (APPLE)
 set(GLEW
 glew.cpp
 )
+endif (APPLE)
 
 set(SHADERS
 )

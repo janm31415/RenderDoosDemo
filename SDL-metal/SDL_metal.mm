@@ -10,10 +10,15 @@ void assign_device(void* layer, MTL::Device* device)
   metalLayer.device = (__bridge id<MTLDevice>)(device);
   }
   
-CA::MetalDrawable* next_drawable(void* layer)
+MTLData next_drawable(void* layer)
   {
+  MTLData d;
   CAMetalLayer* metalLayer = (CAMetalLayer*)layer;
   id<CAMetalDrawable> metalDrawable = [metalLayer nextDrawable];
-  CA::MetalDrawable* pMetalCppDrawable = (__bridge CA::MetalDrawable*) metalDrawable;
-  return pMetalCppDrawable;
+  MTL::Drawable* pMetalCppDrawable = (__bridge MTL::Drawable*) metalDrawable;
+  d.drawable = pMetalCppDrawable;
+  id<MTLTexture> metalTexture = [metalDrawable texture];
+  MTL::Texture* pMetalCppTexture = (__bridge MTL::Texture*) metalTexture;
+  d.texture = pMetalCppTexture;
+  return d;
   }
