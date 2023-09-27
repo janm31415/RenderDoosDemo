@@ -282,9 +282,9 @@ void font_material::render_text(RenderDoos::render_engine* engine, const char* t
   text_vert_t* vp;
   uint32_t* ip;
 
-  engine->geometry_begin(geometry_id, verts.size(), verts.size()*6, (float**)&vp, (void**)&ip);
+  engine->geometry_begin(geometry_id, verts.size(), verts.size(), (float**)&vp, (void**)&ip);
   memcpy(vp, verts.data(), sizeof(float)*7*verts.size());
-  for (uint32_t i = 0; i < verts.size(); ++i)
+  for (uint32_t i = 0; i < verts.size()/6; ++i)
     {
     *ip++ = i * 6;
     *ip++ = i * 6 + 1;
